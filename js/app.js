@@ -1,41 +1,31 @@
 /**
  * CodeKaBabu - Frontend Controller & Event Coordinator
+ * Optimized for mobile touch, fast client-side execution, and zero clutter.
  */
 
 import { ZipService } from './zip-service.js';
-import { createCommentHeader, notebookToPersonalizedPython } from './header-injector.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Elements
+  // Form & Inputs
   const form = document.getElementById('generatorForm');
   const nameInput = document.getElementById('studentName');
   const rollInput = document.getElementById('rollNumber');
   const batchSelect = document.getElementById('batchSelect');
   const btnSubmit = document.getElementById('btnSubmit');
 
-  // Preview elements
+  // Hero Live Preview Elements
   const previewName = document.getElementById('previewName');
   const previewRoll = document.getElementById('previewRoll');
   const previewBatch = document.getElementById('previewBatch');
   const previewDate = document.getElementById('previewDate');
 
-  // Status elements
+  // Status & Progress Bar Elements
   const statusBox = document.getElementById('statusBox');
   const statusMessage = document.getElementById('statusMessage');
   const statusPercent = document.getElementById('statusPercent');
   const progressBarFill = document.getElementById('progressBarFill');
 
-  // Practicals showcase
-  const practicalsContainer = document.getElementById('practicalsContainer');
-  const batchIndicator = document.getElementById('batchIndicator');
-
-  // Modal elements
-  const codeModal = document.getElementById('codeModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalBody = document.getElementById('modalBody');
-  const btnCloseModal = document.getElementById('btnCloseModal');
-
-  // Initialize Manifest
+  // Load Manifest
   let manifest = window.PRACTICALS_MANIFEST;
   if (!manifest) {
     try {
@@ -44,13 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         manifest = await res.json();
       }
     } catch (e) {
-      console.warn('Could not fetch manifest.json, using fallback.', e);
+      console.warn('Could not fetch manifest.json, using offline bundle.', e);
     }
   }
 
   const zipService = new ZipService(manifest);
 
-  // Restore saved state from localStorage if available
+  // Restore saved fields from localStorage
   const savedName = localStorage.getItem('codekababu_name') || '';
   const savedRoll = localStorage.getItem('codekababu_roll') || '';
   const savedBatch = localStorage.getItem('codekababu_batch') || 'B1';
@@ -63,115 +53,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     batchSelect.value = 'B1';
   }
 
-  // Update Live Preview
+  // Update Live Preview in the Hero Illustration
   function updateLivePreview() {
     const currentName = nameInput.value.trim() || 'Rahul Sharma';
     const currentRoll = rollInput.value.trim() || '42';
     const currentBatch = batchSelect.value || 'B1';
 
-    previewName.textContent = currentName;
-    previewRoll.textContent = currentRoll;
-    previewBatch.textContent = currentBatch;
+    if (previewName) previewName.textContent = currentName;
+    if (previewRoll) previewRoll.textContent = currentRoll;
+    if (previewBatch) previewBatch.textContent = currentBatch;
 
-    const dates = manifest.batchDates[currentBatch] || manifest.batchDates['B1'];
-    const p1Date = dates[0] || '17/07/2026';
-    previewDate.textContent = p1Date;
+    if (manifest && manifest.batchDates) {
+      const dates = manifest.batchDates[currentBatch] || manifest.batchDates['B1'];
+      const p1Date = dates[0] || '17/07/2026';
+      if (previewDate) previewDate.textContent = p1Date;
+    }
 
-    // Save to localStorage
+    // Persist to localStorage for student convenience
     if (nameInput.value.trim()) localStorage.setItem('codekababu_name', nameInput.value.trim());
     if (rollInput.value.trim()) localStorage.setItem('codekababu_roll', rollInput.value.trim());
     if (batchSelect.value) localStorage.setItem('codekababu_batch', batchSelect.value);
-
-    // Update batch indicator
-    if (batchIndicator) {
-      batchIndicator.innerHTML = `Selected Batch: <strong>${currentBatch}</strong> (Dates Active)`;
-    }
-
-    renderPracticalsList(currentBatch);
   }
 
-  // Render the list of all 10 practicals with dynamic batch dates
-  function renderPracticalsList(batchKey) {
-    if (!practicalsContainer || !manifest || !manifest.practicals) return;
-
-    const dates = manifest.batchDates[batchKey] || manifest.batchDates['B1'];
-    practicalsContainer.innerHTML = '';
-
-    manifest.practicals.forEach((p, index) => {
-      const dateForThisExp = dates[index] || 'N/A';
-      const row = document.createElement('div');
-      row.className = 'practical-row';
-
-      row.innerHTML = `
-        <div class="prac-left">
-          <span class="prac-exp-tag">Exp ${p.expNo}</span>
-          <span class="prac-title-text" title="${p.title}">${p.title}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span class="prac-date-tag">📅 ${dateForThisExp}</span>
-          <button type="button" class="btn-preview-prac" data-index="${index}" style="
-            background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px;
-            font-size: 0.78rem; font-weight: 600; color: #475569; cursor: pointer;
-          ">Preview</button>
-        </div>
-      `;
-
-      practicalsContainer.appendChild(row);
-    });
-
-    // Bind preview buttons
-    practicalsContainer.querySelectorAll('.btn-preview-prac').forEach((btn) => {
-      btn.addEventListener('click', async (e) => {
-        const idx = parseInt(btn.getAttribute('data-index'), 10);
-        await openPreviewModal(idx, batchKey);
-      });
-    });
-  }
-
-  // Open Preview Modal
-  async function openPreviewModal(index, batchKey) {
-    const exp = manifest.practicals[index];
-    const dates = manifest.batchDates[batchKey] || manifest.batchDates['B1'];
-    const dateStr = dates[index] || 'N/A';
-
-    modalTitle.textContent = `Experiment ${exp.expNo}: ${exp.shortTitle}`;
-    modalBody.textContent = 'Loading source code...';
-    codeModal.classList.add('open');
-
-    try {
-      const rawContent = await zipService.loadRawFile(exp.filename);
-      const student = {
-        name: nameInput.value.trim() || 'Your Name',
-        rollNo: rollInput.value.trim() || 'Your Roll No',
-        batch: batchKey
-      };
-
-      const pyCode = notebookToPersonalizedPython(rawContent, student, exp, dateStr);
-      modalBody.textContent = pyCode;
-    } catch (err) {
-      modalBody.textContent = `Error loading code preview: ${err.message}`;
-    }
-  }
-
-  // Close modal
-  if (btnCloseModal) {
-    btnCloseModal.addEventListener('click', () => {
-      codeModal.classList.remove('open');
-    });
-  }
-
-  if (codeModal) {
-    codeModal.addEventListener('click', (e) => {
-      if (e.target === codeModal) codeModal.classList.remove('open');
-    });
-  }
-
-  // Event Listeners for inputs
+  // Listen to input changes (works on mobile touch keyboards, paste, & autofill)
   nameInput.addEventListener('input', updateLivePreview);
   rollInput.addEventListener('input', updateLivePreview);
   batchSelect.addEventListener('change', updateLivePreview);
 
-  // Form Submission
+  // Handle Form Submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -180,34 +89,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     const batch = batchSelect.value;
 
     if (!name || !rollNo || !batch) {
-      alert('Please fill in your Name, Roll Number, and Batch.');
+      alert('Please fill in your Full Name, Roll Number, and select your Batch.');
       return;
     }
 
-    const selectedFormat = document.querySelector('input[name="fileFormat"]:checked')?.value || 'ipynb';
-
-    // UI state: loading
+    // UI state: generating
     btnSubmit.disabled = true;
-    btnSubmit.innerHTML = `<span>⏳</span> Generating Practicals...`;
+    btnSubmit.innerHTML = `
+      <span class="btn-icon">⏳</span>
+      <span class="btn-text">Generating Practicals...</span>
+    `;
+
     statusBox.className = 'status-box active progress';
-    statusMessage.textContent = 'Starting packaging...';
+    statusMessage.textContent = 'Reading practical files...';
     statusPercent.textContent = '0%';
     progressBarFill.style.width = '0%';
 
     try {
       const student = { name, rollNo, batch };
-      const result = await zipService.buildPracticalZip(student, selectedFormat, (percent, msg) => {
+      // Default to 'both' so student gets .ipynb (with outputs) and pure .py scripts inside
+      const result = await zipService.buildPracticalZip(student, 'both', (percent, msg) => {
         statusPercent.textContent = `${percent}%`;
         statusMessage.textContent = msg;
         progressBarFill.style.width = `${percent}%`;
       });
 
-      // Complete progress
+      // Complete progress animation
       statusPercent.textContent = '100%';
       progressBarFill.style.width = '100%';
       statusMessage.textContent = `Generated ${result.fileCount} practicals! Downloading ZIP...`;
 
-      // Trigger download
+      // Trigger automatic browser download
       zipService.downloadBlob(result.blob, result.filename);
 
       setTimeout(() => {
@@ -216,10 +128,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
             <div>
               <strong>🎉 ZIP Downloaded Successfully!</strong>
-              <div style="font-size: 0.85rem; margin-top: 4px;">File: <code>${result.filename}</code> (All 10 Practicals with Batch ${batch} dates)</div>
+              <div style="font-size: 0.82rem; margin-top: 3px;">
+                File: <code>${result.filename}</code> (All 10 Practicals with Batch ${batch} dates)
+              </div>
             </div>
-            <button id="btnRedownload" style="
-              background: #15803d; color: white; border: none; border-radius: 6px; padding: 6px 14px;
+            <button type="button" id="btnRedownload" style="
+              background: #15803d; color: white; border: none; border-radius: 8px; padding: 6px 14px;
               font-size: 0.82rem; font-weight: 700; cursor: pointer;
             ">Download Again</button>
           </div>
@@ -230,18 +144,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         btnSubmit.disabled = false;
-        btnSubmit.innerHTML = `<span>🗂️</span> Generate &amp; Download ZIP &rarr;`;
-      }, 900);
+        btnSubmit.innerHTML = `
+          <span class="btn-icon">🗂️</span>
+          <span class="btn-text">Generate &amp; Download ZIP</span>
+          <span class="btn-arrow">&rarr;</span>
+        `;
+      }, 700);
 
     } catch (err) {
       console.error(err);
       statusBox.className = 'status-box active error';
       statusBox.innerHTML = `<strong>Error:</strong> ${err.message}`;
       btnSubmit.disabled = false;
-      btnSubmit.innerHTML = `<span>🗂️</span> Generate &amp; Download ZIP &rarr;`;
+      btnSubmit.innerHTML = `
+        <span class="btn-icon">🗂️</span>
+        <span class="btn-text">Generate &amp; Download ZIP</span>
+        <span class="btn-arrow">&rarr;</span>
+      `;
     }
   });
 
-  // Initial render
+  // Initial preview render
   updateLivePreview();
 });
