@@ -721,12 +721,14 @@ select.input-control {
     padding: 8px 16px;
   }
 
-  .nav-badge {
-    display: none; /* Hide long badge on mobile to keep navbar clean and centered */
+  .nav-container {
+    justify-content: space-between;
   }
 
-  .nav-container {
-    justify-content: center;
+  .nav-badge {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+    gap: 4px;
   }
 
   .hero-section {
