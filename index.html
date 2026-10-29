@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeKaBabu - Practical Files Generator for Smart Students</title>
+  <meta name="description" content="Generate and download all personalized NLP practical files with batch dates, name and roll number in a single ZIP. Free, fast and private.">
+  <link rel="icon" type="image/png" href="assets/frog_icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-wrapper">
+        <img src="assets/frog_icon.png" alt="CodeKaBabu Frog" class="brand-icon">
+        <div class="brand-titles">
+          <div class="brand-name">CodeKa<span>Babu</span></div>
+          <div class="brand-tagline">Apna Code, Apna Style!</div>
+        </div>
+      </a>
+      <div class="nav-badge">
+        <span>🌟</span> Practical Files Generator for Smart Students
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-text">
+        <div class="crown-badge">👑</div>
+        <h1 class="hero-title">CodeKaBabu</h1>
+        <div class="hero-subtitle">Naam daalo, code paao!</div>
+        <p class="hero-desc">
+          Enter your name, roll number and batch to get all 10 practical code files with your details added on top. Simple. Fast. Free.
+        </p>
+      </div>
+
+      <div class="hero-graphic">
+        <img src="assets/hero_illustration.png" alt="CodeKaBabu Mascot & Preview" class="hero-art-img">
+        
+        <!-- Live dynamic paper preview overlay -->
+        <div class="live-paper-card" id="livePaperPreview">
+          <div class="code-line"><strong># Name:</strong> <span id="previewName">Rahul Sharma</span></div>
+          <div class="code-line"><strong># Roll No:</strong> <span id="previewRoll">42</span></div>
+          <div class="code-line"><strong># Batch:</strong> <span id="previewBatch">B1</span></div>
+          <div class="code-line"><strong># Date:</strong> <span id="previewDate">17/07/2026</span></div>
+          <div class="code-skeleton">
+            <div class="skeleton-bar s1"></div>
+            <div class="skeleton-bar s2"></div>
+            <div class="skeleton-bar s3"></div>
+            <div class="skeleton-bar s4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Interaction Area -->
+  <main class="main-wrapper">
+    <div class="main-grid">
+      
+      <!-- Card 1: Generator Form -->
+      <section class="card-generator">
+        <div class="card-header-row">
+          <div class="code-badge-icon">&lt;/&gt;</div>
+          <div class="card-title-group">
+            <h2>Generate Your Practical Files</h2>
+            <p>Fill in the details below and get your 10 personalized practical code files in a single ZIP.</p>
+          </div>
+        </div>
+
+        <form id="generatorForm" autocomplete="on">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="studentName" class="form-label">
+              <span>👤</span> Full Name
+            </label>
+            <input 
+              type="text" 
+              id="studentName" 
+              class="input-control" 
+              placeholder="Enter your full name" 
+              required
+              autofocus
+            >
+          </div>
+
+          <!-- Roll Number -->
+          <div class="form-group">
+            <label for="rollNumber" class="form-label">
+              <span>🪪</span> Roll Number
+            </label>
+            <input 
+              type="text" 
+              id="rollNumber" 
+              class="input-control" 
+              placeholder="Enter your roll number" 
+              required
+            >
+          </div>
+
+          <!-- Batch Selection -->
+          <div class="form-group">
+            <label for="batchSelect" class="form-label">
+              <span>👥</span> Select Batch
+            </label>
+            <select id="batchSelect" class="input-control" required>
+              <option value="" disabled selected>Select your batch</option>
+              <option value="B1">Batch B1 (Fridays Lab)</option>
+              <option value="B2">Batch B2 (Wednesdays Lab)</option>
+              <option value="B3">Batch B3 (Mondays Lab)</option>
+            </select>
+          </div>
+
+          <!-- Output Format Toggle -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>📦</span> Package Format
+            </label>
+            <div class="format-toggle-row">
+              <div class="format-option">
+                <input type="radio" id="formatIpynb" name="fileFormat" value="ipynb" checked>
+                <label for="formatIpynb">📓 Notebooks (.ipynb)</label>
+              </div>
+              <div class="format-option">
+                <input type="radio" id="formatPy" name="fileFormat" value="py">
+                <label for="formatPy">🐍 Python (.py)</label>
+              </div>
+              <div class="format-option">
+                <input type="radio" id="formatBoth" name="fileFormat" value="both">
+                <label for="formatBoth">⚡ Both (.ipynb + .py)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="btnSubmit" class="btn-generate">
+            <span>🗂️</span> Generate &amp; Download ZIP &rarr;
+          </button>
+
+          <!-- Status and Progress Display -->
+          <div id="statusBox" class="status-box">
+            <div class="progress-header">
+              <span id="statusMessage">Preparing files...</span>
+              <span id="statusPercent">0%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div id="progressBarFill" class="progress-bar-fill"></div>
+            </div>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badge-pill">
+            <span>🛡️ No login required</span>
+            <span class="dot">•</span>
+            <span>Your data is not stored</span>
+            <span class="dot">•</span>
+            <span>Free for all students</span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Card 2: How It Works -->
+      <aside class="card-how-it-works">
+        <div class="how-header">
+          <span>💡</span>
+          <h3>How It Works?</h3>
+        </div>
+
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text">Enter your name, roll number and batch.</div>
+          </div>
+
+          <div class="step-arrow">&darr;</div>
+
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text">We add your details and batch dates as comments at the top of all 10 practical files.</div>
+          </div>
+
+          <div class="step-arrow">&darr;</div>
+
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text">Get a ZIP file with all personalized code files and outputs preserved.</div>
+          </div>
+        </div>
+
+        <div class="desi-punchline">
+          <div class="desi-text-1">Bas itna hi!</div>
+          <div class="desi-text-2">Ab coding karo, tension nahi! ☺️</div>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Practicals Showcase / Verification Table -->
+  <section class="showcase-section">
+    <div class="showcase-card">
+      <div class="showcase-header">
+        <h3>
+          <span>📚</span> Included Practicals (All 10 Files)
+        </h3>
+        <div class="batch-date-indicator" id="batchIndicator">
+          Selected Batch: <strong>B1</strong> (Dates Active)
+        </div>
+      </div>
+
+      <div class="practicals-list" id="practicalsContainer">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Feature Cards -->
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon-circle green">⚡</div>
+        <h4>Fast &amp; Easy</h4>
+        <p>Get your files in seconds</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle blue">🛡️</div>
+        <h4>Secure</h4>
+        <p>Your data stays private</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle purple">📚</div>
+        <h4>All 10 Practicals</h4>
+        <p>In one ZIP file</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle amber">📱</div>
+        <h4>Mobile Friendly</h4>
+        <p>Works on all devices</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/frog_icon.png" alt="CodeKaBabu" style="width: 32px; height: 32px; object-fit: contain;">
+        <span>CodeKaBabu</span>
+      </div>
+
+      <div class="footer-center">
+        Made with ❤️ for every B.E. student | CodeKaBabu &copy; 2026
+      </div>
+
+      <div class="footer-right">
+        Padho bhi... Code bhi... ☺️
+      </div>
+    </div>
+  </footer>
+
+  <!-- Code Preview Modal -->
+  <div id="codeModal" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h4 id="modalTitle">Experiment Preview</h4>
+        <button id="btnCloseModal" class="btn-close-modal">&times;</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Vendor JSZip -->
+  <script src="js/vendor/jszip.min.js"></script>
+  <!-- Offline Practicals Data Cache -->
+  <script src="js/practicals-data.js"></script>
+  <!-- Application Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
