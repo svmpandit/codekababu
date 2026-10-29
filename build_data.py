@@ -14,8 +14,7 @@ manifest = {
             "11/09/2026",
             "18/09/2026",
             "25/09/2026",
-            "09/10/2026",
-            "16/10/2026"
+            "09/10/2026"
         ],
         "B2": [
             "15/07/2026",
@@ -26,8 +25,7 @@ manifest = {
             "09/09/2026",
             "16/09/2026",
             "30/09/2026",
-            "07/10/2026",
-            "14/10/2026"
+            "07/10/2026"
         ],
         "B3": [
             "13/07/2026",
@@ -38,8 +36,7 @@ manifest = {
             "31/08/2026",
             "21/09/2026",
             "28/09/2026",
-            "05/10/2026",
-            "19/10/2026"
+            "05/10/2026"
         ]
     },
     "practicals": [
@@ -105,13 +102,6 @@ manifest = {
             "pyFilename": "Program_09.py",
             "title": "Dependency Parsing and Sentence Analysis: Develop a system to analyze grammatical relationships in sentences using dependency parsing, identify syntactic relations, and visualize the resulting parse structure.",
             "shortTitle": "Dependency Parsing & Analysis"
-        },
-        {
-            "expNo": 10,
-            "filename": "Program 10.ipynb",
-            "pyFilename": "Program_10.py",
-            "title": "Transformer-based NLP Pipeline & Mini Project: Develop and evaluate a deep learning pipeline for abstractive text summarization and sentiment classification.",
-            "shortTitle": "Mini Project: Transformer NLP Pipeline"
         }
     ]
 }
@@ -120,8 +110,8 @@ os.makedirs('D:/nlpCode/practicals', exist_ok=True)
 os.makedirs('D:/nlpCode/js', exist_ok=True)
 
 with open('D:/nlpCode/practicals/manifest.json', 'w', encoding='utf-8') as f:
-    json.dump(manifest, f, indent=2)
-print('Wrote practicals/manifest.json')
+    json.dump(manifest, f, indent=2, ensure_ascii=False)
+print('Wrote practicals/manifest.json (9 practicals)')
 
 # Build practicals-data.js (embedded offline cache)
 files_data = {}
@@ -132,7 +122,7 @@ for p in manifest['practicals']:
 
 with open('D:/nlpCode/js/practicals-data.js', 'w', encoding='utf-8') as f:
     f.write('// Auto-generated practical files offline bundle\n')
-    f.write('window.PRACTICALS_MANIFEST = ' + json.dumps(manifest, indent=2) + ';\n\n')
-    f.write('window.PRACTICALS_RAW_FILES = ' + json.dumps(files_data) + ';\n')
+    f.write('window.PRACTICALS_MANIFEST = ' + json.dumps(manifest, indent=2, ensure_ascii=False) + ';\n\n')
+    f.write('window.PRACTICALS_RAW_FILES = ' + json.dumps(files_data, ensure_ascii=False) + ';\n')
 
 print('Wrote js/practicals-data.js with', len(files_data), 'embedded files.')

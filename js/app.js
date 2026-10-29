@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div>
               <strong>🎉 ZIP Downloaded Successfully!</strong>
               <div style="font-size: 0.82rem; margin-top: 3px;">
-                File: <code>${result.filename}</code> (All 10 Practicals with Batch ${batch} dates)
+                File: <code>${result.filename}</code> (All 9 Practicals with Batch ${batch} dates)
               </div>
             </div>
             <button type="button" id="btnRedownload" style="
